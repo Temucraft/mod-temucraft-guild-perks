@@ -1,0 +1,28 @@
+[worldserver]
+
+########################################
+# mod-temucraft-guild-perks
+########################################
+#
+#    Temucraft.GuildPerks.Enable
+#        Description: Guild members have their guild's perks. Which perks exist, and each one's default for every
+#                     guild, is in the world table mod_temucraft_guild_perk (see the module's README).
+#        Default:     1
+#
+#    Temucraft.GuildPerks.MinMembers
+#        Description: Members a guild needs before its members get the perks (1 = any guild).
+#        Default:     1
+#
+#    Temucraft.GuildPerks.ManageRank
+#        Description: Lowest guild rank that may switch perks on and off (0 = guild master only, 1 = officers too,
+#                     ...: rank numbers as in the guild's rank list, from 0).
+#        Default:     1
+#
+#    Temucraft.GuildPerks.MobileBanking.Chest
+#        Description: Gameobject Mobile Banking summons (a guild bank object, type 34).
+#        Default:     187299 (Guild Vault)
+
+Temucraft.GuildPerks.Enable = 1
+Temucraft.GuildPerks.MinMembers = 1
+Temucraft.GuildPerks.ManageRank = 1
+Temucraft.GuildPerks.MobileBanking.Chest = 187299
