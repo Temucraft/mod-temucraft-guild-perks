@@ -4,12 +4,12 @@ Guild perks as guilds had them when they had levels, all of them. Three things d
 
 - **The server allows it** (`allowed` in the world table `mod_temucraft_guild_perk`).
 - **The guild has it unlocked**: every guild by default (`unlocked`), or only guilds a GM unlocks it for
-  (`.guildperks unlock <perk> [guild name]`, `.guildperks lock ...`).
+  (`.temucraft guildperks unlock <perk> [guild name]`, `.temucraft guildperks lock ...`).
 - **The guild has it on**: unlocked perks are on (`enabled`) until the guild master or an officer switches one off
-  (`.guildperks off <perk>`, `.guildperks on <perk>`; who may is the `ManageRank` setting).
+  (`.temucraft guildperks off <perk>`, `.temucraft guildperks on <perk>`; who may is the `ManageRank` setting).
 
 Perks the client has a spell for show in the spellbook with their own icon and tooltip; members learn them while the
-perk is on and lose them when it isn't. `.guildperks` lists every perk with its state for your guild.
+perk is on and lose them when it isn't. `.temucraft guildperks` lists every perk with its state for your guild.
 
 | # | Perk | Effect |
 |---|---|---|
@@ -30,7 +30,7 @@ perk is on and lose them when it isn't. `.guildperks` lists every perk with its 
 | 15 | Chug-A-Lug | flasks and elixirs last twice as long (no spellbook entry) |
 | 16 | For Great Justice | 20% chance of an extra emblem or badge when looting one |
 | 17 | Happy Hour | cauldrons give an extra potion (no spellbook entry) |
-| 18 | Have Group, Will Travel | `.guildsummon`: summon your party or raid, out of combat (2 hour cooldown) |
+| 18 | Have Group, Will Travel | `.temucraft guildsummon`: summon your party or raid, out of combat (2 hour cooldown) |
 | 19 | Mass Resurrection | resurrect dead party and raid members nearby at 35% health, out of combat; each person once per 10 minutes |
 | 20 | Ride Like the Wind | flight paths 25% faster (needs [mod-temucraft-travel](https://github.com/Temucraft/mod-temucraft-travel), which speeds the flights up) |
 

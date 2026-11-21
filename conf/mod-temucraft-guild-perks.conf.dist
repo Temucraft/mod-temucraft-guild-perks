@@ -127,7 +127,7 @@ Temucraft.GuildPerks.MassResurrection.LockMinutes = 10
 
 #
 #    Temucraft.GuildPerks.HaveGroup.CooldownMinutes
-#        Description: Have Group, Will Travel: minutes between two .guildsummon uses.
+#        Description: Have Group, Will Travel: minutes between two .temucraft guildsummon uses.
 #        Default:     120
 
 Temucraft.GuildPerks.HaveGroup.CooldownMinutes = 120

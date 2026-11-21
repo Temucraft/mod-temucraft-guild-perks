@@ -31,13 +31,13 @@
 //  15 Chug-A-Lug                  flasks and elixirs last twice as long
 //  16 For Great Justice (118483)  20% chance of an extra emblem or badge when looting one
 //  17 Happy Hour                  cauldrons give an extra potion
-//  18 Have Group, Will Travel     .guildsummon: summon the party or raid (2 hour cooldown)
+//  18 Have Group, Will Travel     .temucraft guildsummon: summon the party or raid (2 hour cooldown)
 //  19 Mass Resurrection (32841)   resurrect dead party members nearby at 35% (each once per 10 minutes)
 //  20 Ride Like the Wind (117983) faster flight paths: members know the perk spell; mod-temucraft-travel's Swift
 //     flights speeds their flights up (25% by default) for as long as they know it
 //
-// .guildperks lists them; the guild master and officers switch them with .guildperks on|off <perk>; GMs unlock and
-// lock them per guild with .guildperks unlock|lock <perk> [guild name].
+// .temucraft guildperks lists them; the guild master and officers switch them with .temucraft guildperks on|off <perk>; GMs unlock and
+// lock them per guild with .temucraft guildperks unlock|lock <perk> [guild name].
 
 #include "CharacterCache.h"
 #include "Chat.h"
@@ -133,7 +133,7 @@ namespace
         uint32 summonCooldown = 2 * HOUR;
     } cfg;
 
-    std::unordered_map<uint32, uint32> summonReady;   // player guid -> game time when .guildsummon is ready again
+    std::unordered_map<uint32, uint32> summonReady;   // player guid -> game time when .temucraft guildsummon is ready again
     std::unordered_map<uint32, uint32> massResLock;   // player guid -> game time until they can be mass-resurrected again
 
     void LoadSettings()
@@ -651,16 +651,16 @@ public:
     {
         static ChatCommandTable perksTable =
         {
-            { "on",     HandleOn,     SEC_PLAYER,     Console::No },
-            { "off",    HandleOff,    SEC_PLAYER,     Console::No },
+            { "on",     HandleOn,     100750,     Console::No },
+            { "off",    HandleOff,    100751,     Console::No },
             { "unlock", HandleUnlock, 100701 /* SEC_GAMEMASTER -> RBAC */, Console::No },
             { "lock",   HandleLock,   100702 /* SEC_GAMEMASTER -> RBAC */, Console::No },
-            { "",       HandleList,   SEC_PLAYER,     Console::No },
+            { "",       HandleList,   100752,     Console::No },
         };
         static ChatCommandTable root =
         {
-            { "guildperks",  perksTable },
-            { "guildsummon", HandleSummon, SEC_PLAYER, Console::No },
+            { "temucraft guildperks",  perksTable },
+            { "temucraft guildsummon", HandleSummon, 100753, Console::No },
         };
         return root;
     }
@@ -671,7 +671,7 @@ public:
         if (!player)
             return false;
         uint32 const guild = player->GetGuildId();
-        handler->SendSysMessage(Say(player, T_HEAD, "|cff40ff40Guild perks|r (.guildperks on|off <perk> for the guild master and officers):"));
+        handler->SendSysMessage(Say(player, T_HEAD, "|cff40ff40Guild perks|r (.temucraft guildperks on|off <perk> for the guild master and officers):"));
         for (auto const& [id, d] : perks)
         {
             char const* state = !d.allowed ? Say(player, T_STATE_DISALLOWED, "|cff808080not on this server|r")
@@ -704,7 +704,7 @@ public:
         uint32 const perk = FindPerk(perkText);
         if (!perk)
         {
-            handler->SendSysMessage(Say(player, T_UNKNOWN_PERK, "There's no such guild perk (.guildperks lists them)."));
+            handler->SendSysMessage(Say(player, T_UNKNOWN_PERK, "There's no such guild perk (.temucraft guildperks lists them)."));
             return true;
         }
         if (!IsUnlocked(guild->GetId(), perk))
@@ -722,7 +722,7 @@ public:
     static bool HandleOn(ChatHandler* handler, Tail perk) { return Switch(handler, std::string(perk), true); }
     static bool HandleOff(ChatHandler* handler, Tail perk) { return Switch(handler, std::string(perk), false); }
 
-    // .guildperks unlock|lock <perk> [guild name] (without a name: the GM's own guild)
+    // .temucraft guildperks unlock|lock <perk> [guild name] (without a name: the GM's own guild)
     static bool Unlock(ChatHandler* handler, std::string text, bool unlock)
     {
         Player* player = handler->GetPlayer();
@@ -736,7 +736,7 @@ public:
         Guild* guild = guildName.empty() ? (player ? sGuildMgr->GetGuildById(player->GetGuildId()) : nullptr) : sGuildMgr->GetGuildByName(guildName);
         if (!perk)
         {
-            handler->SendSysMessage(Say(player, T_UNKNOWN_PERK, "There's no such guild perk (.guildperks lists them)."));
+            handler->SendSysMessage(Say(player, T_UNKNOWN_PERK, "There's no such guild perk (.temucraft guildperks lists them)."));
             return true;
         }
         if (!guild)

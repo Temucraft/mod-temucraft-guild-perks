@@ -1,8 +1,8 @@
 -- mod-temucraft-guild-perks: the perks, what the server allows and each perk's default for every guild. Re-runnable
 -- (edit `allowed`, `unlocked`, `enabled` here or in the table; .reload config reads it again).
 --   allowed:  the perk exists on this server
---   unlocked: every guild has it unlocked (0 = only guilds a GM unlocks it for, .guildperks unlock <perk> <guild>)
---   enabled:  an unlocked perk is on until the guild master or an officer switches it off (.guildperks off <perk>)
+--   unlocked: every guild has it unlocked (0 = only guilds a GM unlocks it for, .temucraft guildperks unlock <perk> <guild>)
+--   enabled:  an unlocked perk is on until the guild master or an officer switches it off (.temucraft guildperks off <perk>)
 CREATE TABLE IF NOT EXISTS `mod_temucraft_guild_perk` (
     `id`       INT UNSIGNED NOT NULL,
     `name`     VARCHAR(64) NOT NULL,
@@ -33,7 +33,7 @@ INSERT INTO `mod_temucraft_guild_perk` (`id`, `name`, `spell`, `allowed`, `unloc
 (15, 'Chug-A-Lug',              0,      1, 1, 1, 'flasks and elixirs last twice as long'),
 (16, 'For Great Justice',       118483, 1, 1, 1, '20% chance of an extra emblem or badge when looting one'),
 (17, 'Happy Hour',              0,      1, 1, 1, 'cauldrons give an extra potion'),
-(18, 'Have Group, Will Travel', 0,      1, 1, 1, '.guildsummon: summon your party or raid (2 hour cooldown)'),
+(18, 'Have Group, Will Travel', 0,      1, 1, 1, '.temucraft guildsummon: summon your party or raid (2 hour cooldown)'),
 (19, 'Mass Resurrection',       32841,  1, 1, 1, 'resurrect dead party members nearby at 35% health, out of combat, each once per 10 minutes'),
 (20, 'Ride Like the Wind',      117983, 1, 1, 1, 'flight paths 25% faster (sped up by mod-temucraft-travel)');
 
@@ -45,19 +45,19 @@ INSERT INTO `spell_script_names` (`spell_id`, `ScriptName`) VALUES
 -- Player-facing texts. Translations go in module_string_locale (same module and id, plus the locale).
 DELETE FROM `module_string` WHERE `module` = 'mod-temucraft-guild-perks';
 INSERT INTO `module_string` (`module`, `id`, `string`) VALUES
-('mod-temucraft-guild-perks', 1, '|cff40ff40Guild perks|r (.guildperks on|off <perk> for the guild master and officers):'),
+('mod-temucraft-guild-perks', 1, '|cff40ff40Guild perks|r (.temucraft guildperks on|off <perk> for the guild master and officers):'),
 ('mod-temucraft-guild-perks', 2, '  {}. {}: {}'),
 ('mod-temucraft-guild-perks', 3, 'You are not in a guild.'),
 ('mod-temucraft-guild-perks', 4, 'Your guild hasn''t unlocked that perk.'),
 ('mod-temucraft-guild-perks', 5, 'Only the guild master and officers can switch guild perks.'),
 ('mod-temucraft-guild-perks', 6, '|cff40ff40Guild perks:|r {} is now {} for your guild.'),
 ('mod-temucraft-guild-perks', 7, '|cff40ff40Guild perks:|r {} {} for {}.'),
-('mod-temucraft-guild-perks', 8, 'There''s no such guild perk (.guildperks lists them).'),
+('mod-temucraft-guild-perks', 8, 'There''s no such guild perk (.temucraft guildperks lists them).'),
 ('mod-temucraft-guild-perks', 9, 'No such guild.'),
 ('mod-temucraft-guild-perks', 10, 'You can summon your group again in {} min.'),
 ('mod-temucraft-guild-perks', 11, 'There''s nobody in your group to summon (out of combat, outside battlegrounds).'),
 ('mod-temucraft-guild-perks', 12, 'Summoning {} group member(s).'),
-('mod-temucraft-guild-perks', 13, '.guildperks | .guildperks on|off <perk> | .guildsummon'),
+('mod-temucraft-guild-perks', 13, '.temucraft guildperks | .temucraft guildperks on|off <perk> | .temucraft guildsummon'),
 ('mod-temucraft-guild-perks', 14, '|cff40ff40on|r'),
 ('mod-temucraft-guild-perks', 15, '|cffffff40off|r'),
 ('mod-temucraft-guild-perks', 16, '|cffff8040locked|r'),
