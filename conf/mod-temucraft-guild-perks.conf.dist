@@ -26,3 +26,108 @@ Temucraft.GuildPerks.Enable = 1
 Temucraft.GuildPerks.MinMembers = 1
 Temucraft.GuildPerks.ManageRank = 1
 Temucraft.GuildPerks.MobileBanking.Chest = 187299
+
+#
+#    Temucraft.GuildPerks.Reinforce.Percent
+#        Description: Reinforce: percent of the durability lost on death that comes back.
+#        Default:     20
+
+Temucraft.GuildPerks.Reinforce.Percent = 20
+
+#
+#    Temucraft.GuildPerks.HastyHearth.Minutes
+#        Description: Hasty Hearth: minutes taken off the hearthstone cooldown.
+#        Default:     15
+
+Temucraft.GuildPerks.HastyHearth.Minutes = 15
+
+#
+#    Temucraft.GuildPerks.CashFlow.Percent
+#        Description: Cash Flow: extra gold from looted money, in percent.
+#        Default:     10
+
+Temucraft.GuildPerks.CashFlow.Percent = 10
+
+#
+#    Temucraft.GuildPerks.QuickAndDead.Percent
+#        Description: The Quick and the Dead: extra health and mana after being resurrected, in percent.
+#        Default:     50
+
+Temucraft.GuildPerks.QuickAndDead.Percent = 50
+
+#
+#    Temucraft.GuildPerks.QuickAndDead.GhostSpeed
+#        Description: The Quick and the Dead: ghost movement speed bonus, in percent.
+#        Default:     100
+
+Temucraft.GuildPerks.QuickAndDead.GhostSpeed = 100
+
+#
+#    Temucraft.GuildPerks.WorkingOvertime.Chance
+#        Description: Working Overtime: percent chance of an extra skill-up when none happened.
+#        Default:     20
+
+Temucraft.GuildPerks.WorkingOvertime.Chance = 20
+
+#
+#    Temucraft.GuildPerks.HonorableMention.Percent
+#        Description: Honorable Mention: extra honor from kills, in percent.
+#        Default:     10
+
+Temucraft.GuildPerks.HonorableMention.Percent = 10
+
+#
+#    Temucraft.GuildPerks.Bartering.Percent
+#        Description: Bartering: lower vendor and trainer prices, in percent.
+#        Default:     10
+
+Temucraft.GuildPerks.Bartering.Percent = 10
+
+#
+#    Temucraft.GuildPerks.BountifulBags.Chance
+#        Description: Bountiful Bags: percent chance of one more gathered material.
+#        Default:     15
+
+Temucraft.GuildPerks.BountifulBags.Chance = 15
+
+#
+#    Temucraft.GuildPerks.ForGreatJustice.Chance
+#        Description: For Great Justice: percent chance of one more emblem.
+#        Default:     20
+
+Temucraft.GuildPerks.ForGreatJustice.Chance = 20
+
+#
+#    Temucraft.GuildPerks.DoctorIsIn.Percent
+#        Description: The Doctor Is In: extra bandage healing, in percent.
+#        Default:     25
+
+Temucraft.GuildPerks.DoctorIsIn.Percent = 25
+
+#
+#    Temucraft.GuildPerks.ChugALug.DurationMultiplier
+#        Description: Chug-A-Lug: flask and elixir duration multiplier.
+#        Default:     2
+
+Temucraft.GuildPerks.ChugALug.DurationMultiplier = 2
+
+#
+#    Temucraft.GuildPerks.MassResurrection.HealthPercent
+#        Description: Mass Resurrection: health a revived player comes back with, in percent.
+#        Default:     35
+
+Temucraft.GuildPerks.MassResurrection.HealthPercent = 35
+
+#
+#    Temucraft.GuildPerks.MassResurrection.LockMinutes
+#        Description: Mass Resurrection: minutes before the same player can be mass-resurrected again.
+#        Default:     10
+
+Temucraft.GuildPerks.MassResurrection.LockMinutes = 10
+
+#
+#    Temucraft.GuildPerks.HaveGroup.CooldownMinutes
+#        Description: Have Group, Will Travel: minutes between two .guildsummon uses.
+#        Default:     120
+
+Temucraft.GuildPerks.HaveGroup.CooldownMinutes = 120

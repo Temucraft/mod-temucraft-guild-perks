@@ -120,6 +120,17 @@ namespace
         uint32 minMembers = 1;
         uint8 manageRank = 1;
         uint32 bankChest = 187299;
+        int32 reinforcePct = 20;
+        int32 hastyHearthMinutes = 15;
+        uint32 cashFlowPct = 10;
+        uint32 quickAndDeadPct = 50, ghostSpeed = 100;
+        int32 overtimeChance = 20;
+        float honorBonus = 1.10f, barteringFactor = 0.90f;
+        int32 bagsChance = 15, justiceChance = 20;
+        uint32 doctorPct = 125;
+        int32 chugFactor = 2;
+        uint32 massResHealthPct = 35, massResLock = 10 * MINUTE;
+        uint32 summonCooldown = 2 * HOUR;
     } cfg;
 
     std::unordered_map<uint32, uint32> summonReady;   // player guid -> game time when .guildsummon is ready again
@@ -131,6 +142,21 @@ namespace
         cfg.minMembers = sConfigMgr->GetOption<uint32>("Temucraft.GuildPerks.MinMembers", 1);
         cfg.manageRank = uint8(sConfigMgr->GetOption<uint32>("Temucraft.GuildPerks.ManageRank", 1));
         cfg.bankChest = sConfigMgr->GetOption<uint32>("Temucraft.GuildPerks.MobileBanking.Chest", 187299);
+        cfg.reinforcePct = sConfigMgr->GetOption<int32>("Temucraft.GuildPerks.Reinforce.Percent", 20);
+        cfg.hastyHearthMinutes = sConfigMgr->GetOption<int32>("Temucraft.GuildPerks.HastyHearth.Minutes", 15);
+        cfg.cashFlowPct = sConfigMgr->GetOption<uint32>("Temucraft.GuildPerks.CashFlow.Percent", 10);
+        cfg.quickAndDeadPct = sConfigMgr->GetOption<uint32>("Temucraft.GuildPerks.QuickAndDead.Percent", 50);
+        cfg.ghostSpeed = sConfigMgr->GetOption<uint32>("Temucraft.GuildPerks.QuickAndDead.GhostSpeed", 100);
+        cfg.overtimeChance = sConfigMgr->GetOption<int32>("Temucraft.GuildPerks.WorkingOvertime.Chance", 20);
+        cfg.honorBonus = 1.0f + sConfigMgr->GetOption<float>("Temucraft.GuildPerks.HonorableMention.Percent", 10.0f) / 100.0f;
+        cfg.barteringFactor = 1.0f - sConfigMgr->GetOption<float>("Temucraft.GuildPerks.Bartering.Percent", 10.0f) / 100.0f;
+        cfg.bagsChance = sConfigMgr->GetOption<int32>("Temucraft.GuildPerks.BountifulBags.Chance", 15);
+        cfg.justiceChance = sConfigMgr->GetOption<int32>("Temucraft.GuildPerks.ForGreatJustice.Chance", 20);
+        cfg.doctorPct = 100 + sConfigMgr->GetOption<uint32>("Temucraft.GuildPerks.DoctorIsIn.Percent", 25);
+        cfg.chugFactor = sConfigMgr->GetOption<int32>("Temucraft.GuildPerks.ChugALug.DurationMultiplier", 2);
+        cfg.massResHealthPct = sConfigMgr->GetOption<uint32>("Temucraft.GuildPerks.MassResurrection.HealthPercent", 35);
+        cfg.massResLock = sConfigMgr->GetOption<uint32>("Temucraft.GuildPerks.MassResurrection.LockMinutes", 10) * MINUTE;
+        cfg.summonCooldown = sConfigMgr->GetOption<uint32>("Temucraft.GuildPerks.HaveGroup.CooldownMinutes", 120) * MINUTE;
     }
 
     void LoadPerks()
@@ -284,7 +310,7 @@ namespace
             {
                 uint32 const now = item->GetUInt32Value(ITEM_FIELD_DURABILITY);
                 if (now < before)
-                    if (int32 back = int32(before - now) * 20 / 100)
+                    if (int32 back = int32(before - now) * cfg.reinforcePct / 100)
                         player->DurabilityPointsLoss(item, -back);
             }
         durability.erase(itr);
@@ -337,7 +363,7 @@ public:
                 return;
             for (auto const& [byItem, spellId] : itr->second)
                 if (player->HasSpellCooldown(spellId))
-                    player->ModifySpellCooldown(spellId, -int32(15 * MINUTE * IN_MILLISECONDS));
+                    player->ModifySpellCooldown(spellId, -int32(cfg.hastyHearthMinutes * MINUTE * IN_MILLISECONDS));
         }, 400ms);
     }
 
@@ -346,7 +372,7 @@ public:
     {
         if (!loot || !loot->gold || !Has(player, CASH_FLOW))
             return;
-        uint32 const extra = loot->gold / 10;
+        uint32 const extra = loot->gold * cfg.cashFlowPct / 100;
         if (!extra)
             return;
         if (Guild* guild = sGuildMgr->GetGuildById(player->GetGuildId()))
@@ -384,9 +410,9 @@ public:
                     {
                         if (!player->IsAlive())
                             return;
-                        player->SetHealth(std::min(player->GetMaxHealth(), player->GetHealth() * 3 / 2));
+                        player->SetHealth(std::min(player->GetMaxHealth(), player->GetHealth() * (100 + cfg.quickAndDeadPct) / 100));
                         if (player->getPowerType() == POWER_MANA)
-                            player->SetPower(POWER_MANA, std::min(player->GetMaxPower(POWER_MANA), player->GetPower(POWER_MANA) * 3 / 2));
+                            player->SetPower(POWER_MANA, std::min(player->GetMaxPower(POWER_MANA), player->GetPower(POWER_MANA) * (100 + cfg.quickAndDeadPct) / 100));
                     }, 200ms);
                     break;
                 }
@@ -400,19 +426,19 @@ public:
         if (Aura* aura = player->AddAura(SPELL_DEAD_SPEED, player))
             for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
                 if (AuraEffect* effect = aura->GetEffect(i))
-                    effect->ChangeAmount(100);
+                    effect->ChangeAmount(int32(cfg.ghostSpeed));
     }
 
     // Working Overtime: +20% chance of a skill-up, never on grey recipes or nodes
     void OnPlayerUpdateCraftingSkill(Player* player, SkillLineAbilityEntry const* skill, uint32 currentLevel, uint32& gain) override
     {
-        if (!gain && skill && currentLevel < skill->TrivialSkillLineRankHigh && Has(player, WORKING_OVERTIME) && roll_chance_i(20))
+        if (!gain && skill && currentLevel < skill->TrivialSkillLineRankHigh && Has(player, WORKING_OVERTIME) && roll_chance_i(cfg.overtimeChance))
             gain = 1;
     }
 
     void OnPlayerUpdateGatheringSkill(Player* player, uint32 /*skillId*/, uint32 current, uint32 gray, uint32 /*green*/, uint32 /*yellow*/, uint32& gain) override
     {
-        if (!gain && current < gray && Has(player, WORKING_OVERTIME) && roll_chance_i(20))
+        if (!gain && current < gray && Has(player, WORKING_OVERTIME) && roll_chance_i(cfg.overtimeChance))
             gain = 1;
     }
 
@@ -420,19 +446,19 @@ public:
     void OnPlayerVictimRewardAfter(Player* player, Player* /*victim*/, uint32& /*killerTitle*/, int32& /*victimRank*/, float& honor) override
     {
         if (Has(player, HONORABLE_MENTION))
-            honor *= 1.10f;
+            honor *= cfg.honorBonus;
     }
 
     // Bartering: 10% lower vendor (and trainer) prices
     void OnPlayerGetReputationPriceDiscount(Player const* player, Creature const* /*creature*/, float& discount) override
     {
         if (Has(const_cast<Player*>(player), BARTERING))
-            discount *= 0.90f;
+            discount *= cfg.barteringFactor;
     }
     void OnPlayerGetReputationPriceDiscount(Player const* player, FactionTemplateEntry const* /*faction*/, float& discount) override
     {
         if (Has(const_cast<Player*>(player), BARTERING))
-            discount *= 0.90f;
+            discount *= cfg.barteringFactor;
     }
 
     // Bountiful Bags, For Great Justice, Happy Hour: sometimes one more of what was looted
@@ -442,9 +468,9 @@ public:
             return;
         uint32 const entry = item->GetEntry();
         if (IsGatheredMaterial(item->GetTemplate()) && (lootGuid.IsGameObject() || lootGuid.IsCreature() || lootGuid.IsItem())
-            && Has(player, BOUNTIFUL_BAGS) && roll_chance_i(15))
+            && Has(player, BOUNTIFUL_BAGS) && roll_chance_i(cfg.bagsChance))
             player->AddItem(entry, 1);
-        else if (In(EMBLEMS, entry) && Has(player, FOR_GREAT_JUSTICE) && roll_chance_i(20))
+        else if (In(EMBLEMS, entry) && Has(player, FOR_GREAT_JUSTICE) && roll_chance_i(cfg.justiceChance))
             player->AddItem(entry, 1);
         else if (In(CAULDRON_POTIONS, entry) && lootGuid.IsGameObject() && Has(player, HAPPY_HOUR))
             player->AddItem(entry, 1);
@@ -463,7 +489,7 @@ public:
         if (!player || !spellInfo || spellInfo->ExcludeTargetAuraSpell != SPELL_RECENT_BANDAGE)
             return;
         if (Has(player, DOCTOR_IS_IN) && !player->InBattleground() && !player->InArena())
-            heal = heal * 125 / 100;
+            heal = heal * cfg.doctorPct / 100;
     }
 
     // Chug-A-Lug: flasks and elixirs last twice as long
@@ -477,7 +503,7 @@ public:
             return;
         if (aura->GetMaxDuration() <= 0 || aura->GetDuration() != aura->GetMaxDuration())
             return;   // only freshly applied ones (not reloaded at login)
-        aura->SetMaxDuration(aura->GetMaxDuration() * 2);
+        aura->SetMaxDuration(aura->GetMaxDuration() * cfg.chugFactor);
         aura->SetDuration(aura->GetMaxDuration());
     }
 };
@@ -603,8 +629,8 @@ class spell_temucraft_guild_mass_resurrection : public SpellScript
             return;
         if (Player* target = GetHitPlayer())
         {
-            massResLock[target->GetGUID().GetCounter()] = uint32(GameTime::GetGameTime().count()) + 10 * MINUTE;
-            SetEffectValue(int32(target->GetMaxHealth() * 35 / 100));
+            massResLock[target->GetGUID().GetCounter()] = uint32(GameTime::GetGameTime().count()) + cfg.massResLock;
+            SetEffectValue(int32(target->GetMaxHealth() * cfg.massResHealthPct / 100));
         }
     }
 
@@ -764,7 +790,7 @@ public:
             handler->SendSysMessage(Say(player, T_SUMMON_NONE, "There's nobody in your group to summon (out of combat, outside battlegrounds)."));
             return true;
         }
-        ready = now + 2 * HOUR;
+        ready = now + cfg.summonCooldown;
         handler->PSendSysMessage(Say(player, T_SUMMON_SENT, "Summoning {} group member(s)."), sent);
         return true;
     }
