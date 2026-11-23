@@ -39,6 +39,7 @@
 // .temucraft guildperks lists them; the guild master and officers switch them with .temucraft guildperks on|off <perk>; GMs unlock and
 // lock them per guild with .temucraft guildperks unlock|lock <perk> [guild name].
 
+#include "TemucraftLocked.h"
 #include "CharacterCache.h"
 #include "Chat.h"
 #include "CommandScript.h"
@@ -133,8 +134,8 @@ namespace
         uint32 summonCooldown = 2 * HOUR;
     } cfg;
 
-    std::unordered_map<uint32, uint32> summonReady;   // player guid -> game time when .temucraft guildsummon is ready again
-    std::unordered_map<uint32, uint32> massResLock;   // player guid -> game time until they can be mass-resurrected again
+    Temucraft::LockedMap<uint32, uint32> summonReady;   // player guid -> game time when .temucraft guildsummon is ready again
+    Temucraft::LockedMap<uint32, uint32> massResLock;   // player guid -> game time until they can be mass-resurrected again
 
     void LoadSettings()
     {
@@ -288,7 +289,7 @@ namespace
     }
 
     // Reinforce: durability before a death or a spirit healer's resurrection, to give part of the loss back
-    std::unordered_map<uint32, std::unordered_map<uint8, uint32>> durability;
+    Temucraft::LockedMap<uint32, std::unordered_map<uint8, uint32>> durability;
 
     void Snapshot(Player* player)
     {
